@@ -1,0 +1,40 @@
+DROP DATABASE IF EXISTS employeeDB;
+CREATE DATABASE employeeDB;
+USE employeeDB;
+
+CREATE TABLE employee (
+    emp_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    salary DECIMAL(10,2)
+);
+
+CREATE TABLE employee_audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT,
+    emp_name VARCHAR(100),
+    salary DECIMAL(10,2),
+    updated_on DATETIME
+);
+
+INSERT INTO employee (emp_name, salary) VALUES
+('John', 20000),
+('Alice', 40000),
+('Bob', 80000);
+
+DELIMITER $$
+
+CREATE TRIGGER before_employee_update
+BEFORE UPDATE ON employee
+FOR EACH ROW
+BEGIN
+    INSERT INTO employee_audit (emp_id, emp_name, salary, updated_on)
+    VALUES (OLD.emp_id, OLD.emp_name, OLD.salary, NOW());
+END $$
+
+DELIMITER ;
+
+-- Update to test the trigger
+UPDATE employee SET salary = salary + 5000 WHERE emp_id = 2;
+
+-- See what was logged
+SELECT * FROM employee_audit;

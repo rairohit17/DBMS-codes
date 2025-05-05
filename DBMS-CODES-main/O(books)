@@ -1,0 +1,75 @@
+-- Drop and create fresh database
+DROP DATABASE IF EXISTS libraryDB;
+CREATE DATABASE libraryDB;
+USE libraryDB;
+
+-- Create tables with required constraints
+CREATE TABLE student (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    department VARCHAR(50) CHECK (department IN ('COMP', 'IT', 'MECH'))
+);
+
+CREATE TABLE staff (
+    staff_id INT PRIMARY KEY,
+    staff_name VARCHAR(100) NOT NULL,
+    department VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE book (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    book_type VARCHAR(50) CHECK (book_type IN ('Textbook', 'Journal', 'Reference')),
+    department VARCHAR(50),
+    issued_to INT,
+    issue_year INT,
+    FOREIGN KEY (issued_to) REFERENCES student(roll_no)
+);
+
+-- Insert data
+INSERT INTO student VALUES
+(4225, 'Ravi', 'COMP'),
+(4226, 'Anya', 'IT'),
+(4227, 'Mohan', 'COMP');
+
+INSERT INTO staff VALUES
+(101, 'Mr. Sharma', 'COMP'),
+(102, 'Ms. Joshi', 'IT');
+
+INSERT INTO book VALUES
+(1, 'C++ Basics', 'Textbook', 'COMP', 4225, 2023),
+(2, 'AI Journal 2022', 'Journal', 'COMP', NULL, 2022),
+(3, 'DSA Guide', 'Reference', 'COMP', 4226, 2023),
+(4, 'OS Journal', 'Journal', 'IT', NULL, 2023),
+(5, 'Web Dev', 'Textbook', 'COMP', 4225, 2023),
+(6, 'Machine Learning', 'Textbook', 'COMP', NULL, 2024);
+
+-- Alter table: add column
+ALTER TABLE student ADD email VARCHAR(100);
+
+-- Alter table: modify column
+ALTER TABLE book MODIFY title VARCHAR(200);
+
+-- Alter table: drop column
+ALTER TABLE student DROP COLUMN email;
+
+-- Drop staff table
+DROP TABLE staff;
+
+-- i. Total number of books of COMP department
+SELECT COUNT(*) AS total_books_comp FROM book WHERE department = 'COMP';
+
+-- ii. Total books issued by Roll No 4225
+SELECT COUNT(*) AS books_by_4225 FROM book WHERE issued_to = 4225;
+
+-- iii. All journal details
+SELECT * FROM book WHERE book_type = 'Journal';
+
+-- iv. Users who have not issued any book in 2023
+SELECT * FROM student
+WHERE roll_no NOT IN (
+    SELECT issued_to FROM book WHERE issue_year = 2023 AND issued_to IS NOT NULL
+);
+
+-- v. Books of Computer Department
+SELECT * FROM book WHERE department = 'COMP';

@@ -1,0 +1,35 @@
+DROP DATABASE IF EXISTS discountDB;
+CREATE DATABASE discountDB;
+USE discountDB;
+
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255),
+    price DECIMAL(10,2),
+    discount DECIMAL(10,2) DEFAULT 0
+);
+
+INSERT INTO products(product_name, price) VALUES
+('Vivo Phone', 20000),
+('Toy', 200),
+('Notebook', 80),
+('PC', 80000);
+
+DELIMITER $$
+
+CREATE PROCEDURE cal_discount()
+BEGIN
+    UPDATE products
+    SET discount = CASE
+        WHEN price < 1000 THEN 100
+        ELSE 200
+    END;
+END $$
+
+DELIMITER ;
+
+-- Now just call this procedure:
+CALL cal_discount();
+
+-- And view the updated table
+SELECT * FROM products;

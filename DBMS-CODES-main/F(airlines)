@@ -1,0 +1,75 @@
+DROP DATABASE IF EXISTS airlineDB;
+CREATE DATABASE airlineDB;
+USE airlineDB;
+
+-- Create Flights table
+CREATE TABLE flights (
+    flight_no INT,
+    source VARCHAR(50),
+    destination VARCHAR(50),
+    flight_date DATE,
+    PRIMARY KEY(flight_no, flight_date)
+);
+
+-- Create Passengers table
+CREATE TABLE passengers (
+    passenger_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    gender CHAR(1)
+);
+
+-- Create Bookings table
+CREATE TABLE bookings (
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    passenger_id INT,
+    flight_no INT,
+    flight_date DATE,
+    status VARCHAR(20),  -- Booked / Cancelled
+    amount DECIMAL(10,2),
+    FOREIGN KEY (passenger_id) REFERENCES passengers(passenger_id),
+    FOREIGN KEY (flight_no, flight_date) REFERENCES flights(flight_no, flight_date)
+);
+
+-- Insert sample data
+INSERT INTO flights VALUES
+(12345, 'Delhi', 'Mumbai', '2021-10-21'),
+(12345, 'Delhi', 'Mumbai', '2024-07-01'),
+(54321, 'Chennai', 'Kolkata', '2023-01-01');
+
+INSERT INTO passengers (name, gender) VALUES
+('John', 'M'),
+('Karan', 'M'),
+('Riya', 'F'),
+('Arun', 'M'),
+('Meghan', 'F');
+
+INSERT INTO bookings (passenger_id, flight_no, flight_date, status, amount) VALUES
+(1, 12345, '2021-10-21', 'Booked', 5000),
+(2, 12345, '2024-07-01', 'Booked', 5500),
+(3, 12345, '2024-07-01', 'Booked', 5500),
+(4, 54321, '2023-01-01', 'Cancelled', 6000),
+(5, 54321, '2023-01-01', 'Cancelled', 6000);
+
+-- i. Display flight details on 21 Oct 2021
+SELECT * FROM flights
+WHERE flight_date = '2021-10-21';
+
+-- ii. Display total number of passengers of flight no 12345 on 01 July 2024
+SELECT COUNT(*) AS total_passengers
+FROM bookings
+WHERE flight_no = 12345 AND flight_date = '2024-07-01' AND status = 'Booked';
+
+-- iii. Display total amount of month Jan 2023
+SELECT SUM(amount) AS total_amount
+FROM bookings
+WHERE MONTH(flight_date) = 1 AND YEAR(flight_date) = 2023;
+
+-- iv. Display details of passengers who had cancelled flight on 01 Jan 2023
+SELECT p.*
+FROM passengers p
+JOIN bookings b ON p.passenger_id = b.passenger_id
+WHERE b.flight_date = '2023-01-01' AND b.status = 'Cancelled';
+
+-- v. Get details of all passengers whose name ends with ‘n’
+SELECT * FROM passengers
+WHERE name LIKE '%n';

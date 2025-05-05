@@ -1,0 +1,43 @@
+DROP DATABASE IF EXISTS discountDB;
+CREATE DATABASE discountDB;
+USE discountDB;
+
+-- Create the products table
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255),
+    price DECIMAL(10,2),
+    discount DECIMAL(10,2) DEFAULT 0
+);
+
+-- Insert sample data
+INSERT INTO products(product_name, price) VALUES
+('Vivo Phone', 20000),
+('Toy', 200),
+('Notebook', 80),
+('PC', 80000);
+
+-- Create a function that returns the discount based on price
+DELIMITER $$
+
+CREATE FUNCTION get_discount(price DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE d DECIMAL(10,2);
+    IF price < 1000 THEN
+        SET d = 100;
+    ELSE
+        SET d = 200;
+    END IF;
+    RETURN d;
+END $$
+
+DELIMITER ;
+
+-- Use the function in an UPDATE query
+UPDATE products
+SET discount = get_discount(price);
+
+-- View the updated table
+SELECT * FROM products;

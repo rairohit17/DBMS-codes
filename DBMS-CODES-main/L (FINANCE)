@@ -1,0 +1,82 @@
+-- Drop and recreate the database
+DROP DATABASE IF EXISTS empDB;
+CREATE DATABASE empDB;
+USE empDB;
+
+-- Create Department table with constraints
+CREATE TABLE Department (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- Create Employee table with constraints and foreign key
+CREATE TABLE Employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100) NOT NULL,
+    salary DECIMAL(10,2) CHECK (salary > 0),
+    join_date DATE,
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES Department(dept_id)
+);
+
+-- Sample data for Department
+INSERT INTO Department VALUES
+(101, 'IT'),
+(102, 'HR'),
+(103, 'ADMIN'),
+(104, 'FINANCE');
+
+-- Sample data for Employee
+INSERT INTO Employee VALUES
+(1, 'John', 85000, '2012-01-15', 103),
+(2, 'Mike', 90000, '2015-06-10', 101),
+(3, 'Amit', 55000, '2012-01-25', 103),
+(4, 'Sara', 95000, '2019-03-12', 102),
+(5, 'Paul', 100000, '2021-11-23', 104),
+(6, 'Arun', 70000, '2011-07-19', 104);
+
+-- ---------------------------------------------
+-- ALTER TABLE examples
+-- ---------------------------------------------
+
+-- Add a column
+ALTER TABLE Employee ADD gender CHAR(1);
+
+-- Modify a column
+ALTER TABLE Employee MODIFY emp_name VARCHAR(150);
+
+-- Drop a column
+ALTER TABLE Employee DROP gender;
+
+-- ---------------------------------------------
+-- Required Queries
+-- ---------------------------------------------
+
+-- i. Get seniority list of employees working in Department FINANCE
+SELECT E.*
+FROM Employee E
+JOIN Department D ON E.dept_id = D.dept_id
+WHERE D.dept_name = 'FINANCE'
+ORDER BY E.join_date;
+
+-- ii. Employees who joined in Year 2012 and work in ADMIN department
+SELECT E.*
+FROM Employee E
+JOIN Department D ON E.dept_id = D.dept_id
+WHERE D.dept_name = 'ADMIN'
+  AND YEAR(E.join_date) = 2012;
+
+-- iii. Get details of employees whose name contains exactly four characters
+SELECT * FROM Employee
+WHERE CHAR_LENGTH(emp_name) = 4;
+
+-- iv. Display department-wise total salary
+SELECT D.dept_name, SUM(E.salary) AS total_salary
+FROM Employee E
+JOIN Department D ON E.dept_id = D.dept_id
+GROUP BY D.dept_name;
+
+-- v. Get details of employee who is having maximum salary
+SELECT *
+FROM Employee
+WHERE salary = (SELECT MAX(salary) FROM Employee);

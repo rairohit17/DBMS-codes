@@ -1,0 +1,48 @@
+DROP DATABASE IF EXISTS studentDB;
+CREATE DATABASE studentDB;
+USE studentDB;
+
+-- Create Student table
+CREATE TABLE student (
+    roll_no INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    percentage DECIMAL(5,2),
+    grade VARCHAR(20)
+);
+
+-- Insert sample data
+INSERT INTO student (name, percentage) VALUES
+('John', 35),
+('Alice', 45),
+('Mark', 55),
+('Emma', 65);
+
+-- Create function
+DELIMITER $$
+
+CREATE FUNCTION get_grade(percentage DECIMAL(5,2)) 
+RETURNS VARCHAR(20)
+DETERMINISTIC
+NO SQL
+BEGIN
+    DECLARE grade VARCHAR(20);
+    IF percentage <= 40 THEN
+        SET grade = 'Pass';
+    ELSEIF percentage > 40 AND percentage < 50 THEN
+        SET grade = 'II';
+    ELSEIF percentage >= 50 AND percentage <= 60 THEN
+        SET grade = 'Higher II';
+    ELSE
+        SET grade = 'I';
+    END IF;
+    RETURN grade;
+END $$
+
+DELIMITER ;
+
+-- Update grade column using function
+UPDATE student
+SET grade = get_grade(percentage);
+
+-- View result
+SELECT * FROM student;

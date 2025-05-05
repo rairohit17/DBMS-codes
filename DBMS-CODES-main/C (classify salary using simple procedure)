@@ -1,0 +1,33 @@
+DROP DATABASE IF EXISTS employeeDB;
+CREATE DATABASE employeeDB;
+USE employeeDB;
+
+CREATE TABLE employees (
+    emp_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    salary DECIMAL(10,2),
+    emp_class VARCHAR(20) DEFAULT ''
+);
+
+INSERT INTO employees (emp_name, salary) VALUES
+('John', 20000),
+('Alice', 30000),
+('Bob', 80000);
+
+DELIMITER $$
+
+CREATE PROCEDURE classify_employees()
+BEGIN
+    UPDATE employees
+    SET emp_class = CASE
+        WHEN salary < 25000 THEN 'Class III'
+        WHEN salary BETWEEN 25000 AND 75000 THEN 'Class II'
+        ELSE 'Class I'
+    END;
+END $$
+
+DELIMITER ;
+
+CALL classify_employees();
+
+SELECT * FROM employees;

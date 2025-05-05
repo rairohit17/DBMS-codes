@@ -1,0 +1,91 @@
+-- S
+-- 	Draw ER diagram for Exam Result Management System, Create tables using ER diagram.
+-- Implement SQL queries to demonstrate use of %, _, and,, or, not, >, <, =, <=, >
+
+DROP DATABASE IF EXISTS examDB;
+CREATE DATABASE examDB;
+USE examDB;
+
+-- Create tables
+CREATE TABLE Student (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    class VARCHAR(20),
+    gender VARCHAR(10)
+);
+
+CREATE TABLE Subject (
+    subject_id INT PRIMARY KEY,
+    subject_name VARCHAR(100)
+);
+
+CREATE TABLE Exam (
+    exam_id INT PRIMARY KEY,
+    exam_name VARCHAR(100),
+    date DATE
+);
+
+CREATE TABLE Result (
+    result_id INT PRIMARY KEY,
+    student_id INT,
+    subject_id INT,
+    exam_id INT,
+    marks INT,
+    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+    FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)
+);
+
+-- Insert data into Student
+INSERT INTO Student VALUES
+(1, 'Alice', '10-A', 'Female'),
+(2, 'Bob', '10-B', 'Male'),
+(3, 'Amit', '10-A', 'Male');
+
+-- Insert data into Subject
+INSERT INTO Subject VALUES
+(101, 'Math'),
+(102, 'Science'),
+(103, 'English');
+
+-- Insert data into Exam
+INSERT INTO Exam VALUES
+(201, 'Mid-Term', '2025-03-01'),
+(202, 'Final', '2025-05-01');
+
+-- Insert data into Result
+INSERT INTO Result VALUES
+(1, 1, 101, 201, 85),
+(2, 1, 102, 201, 90),
+(3, 2, 101, 201, 78),
+(4, 2, 103, 202, 65),
+(5, 3, 102, 202, 55);
+
+-- Queries demonstrating SQL operators
+
+-- LIKE with %
+SELECT * FROM Student WHERE name LIKE 'A%';
+
+-- LIKE with _
+SELECT * FROM Student WHERE name LIKE 'A__';
+
+-- AND
+SELECT * FROM Student WHERE class = '10-A' AND gender = 'Female';
+
+-- OR
+SELECT * FROM Student WHERE class = '10-A' OR gender = 'Male';
+
+-- NOT
+SELECT * FROM Student WHERE NOT gender = 'Male';
+
+-- >
+SELECT * FROM Result WHERE marks > 80;
+
+-- <
+SELECT * FROM Result WHERE marks < 60;
+
+-- =
+SELECT * FROM Result WHERE marks = 85;
+
+-- >= and <=
+SELECT * FROM Result WHERE marks >= 60 AND marks <= 80;

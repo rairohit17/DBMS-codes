@@ -1,0 +1,42 @@
+DROP DATABASE IF EXISTS employeeDB;
+CREATE DATABASE employeeDB;
+USE employeeDB;
+
+CREATE TABLE employees (
+    emp_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    salary DECIMAL(10,2),
+    emp_class VARCHAR(20)
+);
+
+INSERT INTO employees (emp_name, salary) VALUES
+('John', 20000),
+('Alice', 40000),
+('Bob', 80000);
+
+DELIMITER $$
+
+CREATE FUNCTION get_class(salary DECIMAL(10,2)) 
+RETURNS VARCHAR(20)
+DETERMINISTIC
+NO SQL
+BEGIN
+    DECLARE emp_class VARCHAR(20);
+    IF salary < 25000 THEN
+        SET emp_class = 'Class III';
+    ELSEIF salary BETWEEN 25000 AND 75000 THEN
+        SET emp_class = 'Class II';
+    ELSE
+        SET emp_class = 'Class I';
+    END IF;
+    RETURN emp_class;
+END $$
+
+DELIMITER ;
+
+-- Update employee class based on salary
+UPDATE employees
+SET emp_class = get_class(salary);
+
+-- View updated table
+SELECT * FROM employees;

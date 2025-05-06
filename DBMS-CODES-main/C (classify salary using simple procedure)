@@ -14,20 +14,24 @@ INSERT INTO employees (emp_name, salary) VALUES
 ('Alice', 30000),
 ('Bob', 80000);
 
-DELIMITER $$
 
-CREATE PROCEDURE classify_employees()
+CALL Get_Employee_Class(3, @class);
+SELECT @class;
+
+/// procedure 
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Get_Employee_Class`(IN employe_id INT , OUT emp_class VARCHAR(20))
 BEGIN
-    UPDATE employees
-    SET emp_class = CASE
-        WHEN salary < 25000 THEN 'Class III'
-        WHEN salary BETWEEN 25000 AND 75000 THEN 'Class II'
-        ELSE 'Class I'
-    END;
-END $$
+DECLARE v_salary DECIMAL(20,2) ; 
+SELECT EmpSalary INTO v_salary
+FROM Employee 
+WHERE EmpID = employe_id; 
 
-DELIMITER ;
-
-CALL classify_employees();
-
-SELECT * FROM employees;
+IF v_salary < 25000 THEN 
+SET emp_class = "CLASS III"; 
+ELSEIF v_salary BETWEEN  25000 AND 75000 THEN
+SET emp_class = "CLASS II"; 
+ELSE
+ SET emp_class = "CLASS I " ;
+END IF; 
+END
